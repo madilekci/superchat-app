@@ -9,6 +9,8 @@ import 'firebase/compat/auth';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { useCollectionData } from 'react-firebase-hooks/firestore';
 
+import moment from 'moment';
+
 firebase.initializeApp({
 	apiKey: 'AIzaSyDm9rZqLiWXXke3bFsmVF_Sk4FABUW-nFE',
 	authDomain: 'superchat-mad-1.firebaseapp.com',
@@ -26,28 +28,18 @@ const App = () => {
 	const [user] = useAuthState(auth);
 
 	return (
-		<div className='App'>
-      <div>
-        <button className='btn btn-info'>Hey</button>
-      </div>
-      {
-        user ? (
-          <>
-            <section className='authentication'>
-              <SignOutButton />
-              <SignIn/>
-            </section>
-            <section className='header'>
-              <h1>MAD | Superchat APP ⚛️🔥💬</h1>
-            </section>
-            <ChatRoom />
-          </>
-        ) : (
-          <SignIn/>
-        )
-      }
-
-		</div>
+		<>
+      {/* Navbar */}
+			<nav className='navbar navbar-light bg-light justify-content-between sticky-top'>
+      <div className="container-fluid">
+        MAD | Superchat APP 💬
+        <a className='navbar-brand' href='#'>
+					{ user ?  <SignOutButton /> : <SignIn />  }
+        </a>
+        </div>
+			</nav>
+      { user && <ChatRoom /> }
+		</>
 	);
 };
 
@@ -57,9 +49,11 @@ const SignIn = () => {
 		auth.signInWithPopup(provider);
 	};
 
-	return <button onClick={handleSignIn}>Sign In with Google</button>;
+	return <button className='btn btn-outline-success my-2 my-sm-0' onClick={handleSignIn}>Sign In with Google</button>;
 };
-const SignOutButton = () => <button onClick={() => auth.signOut()}>Sign Out</button>;
+const SignOutButton = () => (
+  <button className='btn btn-outline-success my-2 my-sm-0' onClick={() => auth.signOut()}>Sign Out</button>
+);
 
 const ChatRoom = () => {
 	const messagesRef = firestore.collection('messages');
@@ -84,31 +78,69 @@ const ChatRoom = () => {
 	};
 
 	return (
-		<>
-			<div>
-				{messages && messages.map((msg) => <ChatMessage key={msg.id} message={msg} />)}
-			</div>
-			<form onSubmit={sendMessage}>
-				<input
-					value={formValue}
-					onChange={(e) => setFormValue(e.target.value)}
-					type='text'
-				/>
-				<button type='submit'>🕊</button>
-			</form>
-		</>
+		// <>
+		// 	<div>
+		// 		{messages && messages.map((msg) => <ChatMessage key={msg.id} message={msg} />)}
+		// 	</div>
+		// </>
+    <section style={{backgroundColor: '#E5E5CB'}}>
+        <div style={{minHeight: '600px'}} className='container py-5'>
+          <div className="row">
+            <div className="col-md-4 col-lg-8 offset-2">
+              <ul className="list-unstyled">
+                {
+                  messages && messages.map((msg) => <ChatMessage key={msg.id} message={msg} />)
+                }
+                <li className="bg-white mb-3 mt-5">
+                  <form className="form-floating form-outline" onSubmit={sendMessage}>
+                    <textarea
+                      className="form-control"
+                      placeholder="Type your message here"
+                      id="floatingTextarea2"
+                      value={formValue}
+                      onChange={(e) => setFormValue(e.target.value)}
+                    />
+                    <label htmlFor="floatingTextarea2">Your message</label>
+                    <button className='btn btn-lg btn-outline-success float-end mt-3' type='submit'>Send 🕊</button>
+                  </form>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+    </section>
 	);
 };
 
 const ChatMessage = ({ message }) => {
 	const { text, uid, photoURL } = message;
+  const timeDiff = message.createdAt?.seconds ? moment.unix(message.createdAt.seconds).fromNow() : ''
 
-	const messageClass = uid === auth.currentUser.uid ? 'sent' : 'received';
+	const messageDirection = uid === auth.currentUser?.uid ? 'sent' : 'received';
+  const user = auth.currentUser;
+
+  let messageLiClass = 'd-flex justify-content-between mb-4';
+  messageDirection === 'sent' && (messageLiClass += ' flex-row-reverse');
+
+  const avatarClass = messageDirection === 'sent' ? 'ms-3' : 'me-3';
+
 	return (
-		<div className={messageClass} style={{display:'flex', flexDirection: 'row', flexWrap: 'wrap'}}>
-			<img width={'24px'} height={'24px'} src={photoURL} alt='' />
-			<p>{message.text}</p>
-		</div>
+    <li className={messageLiClass}>
+      <img src={photoURL} alt="avatar"
+        className={`rounded-circle d-flex align-self-start shadow-1-strong ${avatarClass}`} width="60" />
+
+      <div className="card w-100 ml-2">
+        <div className="card-header d-flex justify-content-between p-3">
+          <p className="fw-bold mb-0">{user.displayName}</p>
+          <p className="text-muted small mb-0"><i className="far fa-clock"></i>{timeDiff}</p>
+        </div>
+        <div className="card-body">
+          <p className="mb-0">
+            {text}
+          </p>
+        </div>
+      </div>
+    </li>
 	);
 };
 
