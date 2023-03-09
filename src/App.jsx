@@ -1,34 +1,53 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
+import React from 'react'
 import './App.css'
 
-function App() {
-  const [count, setCount] = useState(0)
+import firebase from 'firebase/compat/app';
+
+import 'firebase/compat/firestore';
+import 'firebase/compat/auth';
+
+import { useAuthState } from 'react-firebase-hooks/auth';
+import { useCollectionData } from 'react-firebase-hooks/firestore';
+
+firebase.initializeApp({
+  apiKey: "AIzaSyDm9rZqLiWXXke3bFsmVF_Sk4FABUW-nFE",
+  authDomain: "superchat-mad-1.firebaseapp.com",
+  projectId: "superchat-mad-1",
+  storageBucket: "superchat-mad-1.appspot.com",
+  messagingSenderId: "907684402565",
+  appId: "1:907684402565:web:c9ca03da81758dfa4ba0ec",
+  measurementId: "G-TYVH3DCFY7"
+})
+
+const auth = firebase.auth();
+const firestore = firebase.firestore();
+
+const App = () => {
+  const [user] = useAuthState(auth);
+
+  console.log(user);
 
   return (
-    <div className="App">
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src="/vite.svg" className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://reactjs.org" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+    <div className='App'>
+      <header>Hello {user?.displayName}</header>
+
+      <section>
+        { user ? <SignOutButton /> : <SignIn />}
+      </section>
     </div>
   )
 }
+
+
+const SignIn = () => {
+  const handleSignIn = () => {
+    const provider = new firebase.auth.GoogleAuthProvider();
+    auth.signInWithPopup(provider);
+  }
+
+  return <button onClick={handleSignIn} >Sign In with Google</button>
+}
+
+const SignOutButton = () => <button onClick={() => auth.signOut()} >Sign Out</button>
 
 export default App
