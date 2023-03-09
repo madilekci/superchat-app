@@ -1,15 +1,25 @@
 import React, { useState } from 'react';
 import Filter from 'bad-words';
 
+// firebase
+import { useCollectionData } from 'react-firebase-hooks/firestore';
+
 // components
 import ChatMessage from './ChatMessage';
 
-const ChatRoom = ({ messages, bannedUsersRef, messagesRef, currentUser, firebase, textAreaRef }) => {
+const ChatRoom = ({ currentUser, firebase, textAreaRef }) => {
 	const [formValue, setFormValue] = useState('');
+	const firestore = firebase.firestore();
 
-	const handleSubmit = async (e) => {
-		e.preventDefault();
+	// get last 25 messages with query
+	const messagesRef = firestore.collection('messages');
+	const query = messagesRef.orderBy('createdAt').limit(25);
+	let [messages] = useCollectionData(query, { idField: 'id' });
 
+
+	const bannedUsersRef = firestore.collection('banned');
+
+	const handleClick = async () => {
 		const { uid, photoURL } = currentUser;
 
 		// check if message is appropriate
@@ -39,26 +49,22 @@ const ChatRoom = ({ messages, bannedUsersRef, messagesRef, currentUser, firebase
 						{messages &&
 							messages.map((msg) => <ChatMessage key={msg.id} message={msg} currentUser={currentUser} />)}
 						<li className='bg-white mb-3 mt-5'>
-							<form
-								className='form-floating'
-								onSubmit={handleSubmit}
+							<textarea
+								ref={textAreaRef}
+								className='form-control'
+								placeholder='Type your message here'
+								id='textarea'
+								value={formValue}
+								rows="5"
+								onChange={(e) => setFormValue(e.target.value)}
+							/>
+							<button
+								className='btn btn-lg btn-success float-end mt-3'
+								type='button'
+								onClick={handleClick}
 							>
-								<textarea
-									ref={textAreaRef}
-									className='form-control'
-									placeholder='Type your message here'
-									id='textarea'
-									value={formValue}
-									onChange={(e) => setFormValue(e.target.value)}
-								/>
-								<label htmlFor='textarea'>Your message</label>
-								<button
-									className='btn btn-lg btn-success float-end mt-3'
-									type='submit'
-								>
-									Send 🕊
-								</button>
-							</form>
+								Send 🕊
+							</button>
 						</li>
 					</ul>
 				</div>
