@@ -1,5 +1,5 @@
-import React from 'react'
-import './App.css'
+import React, { useState } from 'react';
+import './App.css';
 
 import firebase from 'firebase/compat/app';
 
@@ -10,44 +10,95 @@ import { useAuthState } from 'react-firebase-hooks/auth';
 import { useCollectionData } from 'react-firebase-hooks/firestore';
 
 firebase.initializeApp({
-  apiKey: "AIzaSyDm9rZqLiWXXke3bFsmVF_Sk4FABUW-nFE",
-  authDomain: "superchat-mad-1.firebaseapp.com",
-  projectId: "superchat-mad-1",
-  storageBucket: "superchat-mad-1.appspot.com",
-  messagingSenderId: "907684402565",
-  appId: "1:907684402565:web:c9ca03da81758dfa4ba0ec",
-  measurementId: "G-TYVH3DCFY7"
-})
+	apiKey: 'AIzaSyDm9rZqLiWXXke3bFsmVF_Sk4FABUW-nFE',
+	authDomain: 'superchat-mad-1.firebaseapp.com',
+	projectId: 'superchat-mad-1',
+	storageBucket: 'superchat-mad-1.appspot.com',
+	messagingSenderId: '907684402565',
+	appId: '1:907684402565:web:c9ca03da81758dfa4ba0ec',
+	measurementId: 'G-TYVH3DCFY7',
+});
 
 const auth = firebase.auth();
 const firestore = firebase.firestore();
 
 const App = () => {
-  const [user] = useAuthState(auth);
+	const [user] = useAuthState(auth);
 
-  console.log(user);
-
-  return (
-    <div className='App'>
-      <header>Hello {user?.displayName}</header>
-
-      <section>
-        { user ? <SignOutButton /> : <SignIn />}
+	return (
+		<div className='App'>
+      <section className='header'>
+        <h1>MAD | Superchat APP ⚛️🔥💬</h1>
       </section>
-    </div>
-  )
-}
+      <ChatRoom />
+      <section className='authentication'>
+        <SignIn/>
+        <SignOutButton />
+      </section>
 
+		</div>
+	);
+};
 
 const SignIn = () => {
-  const handleSignIn = () => {
-    const provider = new firebase.auth.GoogleAuthProvider();
-    auth.signInWithPopup(provider);
-  }
+	const handleSignIn = () => {
+		const provider = new firebase.auth.GoogleAuthProvider();
+		auth.signInWithPopup(provider);
+	};
 
-  return <button onClick={handleSignIn} >Sign In with Google</button>
-}
+	return <button onClick={handleSignIn}>Sign In with Google</button>;
+};
+const SignOutButton = () => <button onClick={() => auth.signOut()}>Sign Out</button>;
 
-const SignOutButton = () => <button onClick={() => auth.signOut()} >Sign Out</button>
+const ChatRoom = () => {
+	const messagesRef = firestore.collection('messages');
+	const query = messagesRef.orderBy('createdAt').limit(25);
+	const [formValue, setFormValue] = useState('');
 
-export default App
+	const [messages] = useCollectionData(query, { idField: 'id' });
+	console.log('messages', messages);
+
+	const sendMessage = async (e) => {
+		e.preventDefault();
+		const { uid, photoURL } = auth.currentUser;
+
+		await messagesRef.add({
+			text: formValue,
+			createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+			uid,
+			photoURL,
+		});
+
+		setFormValue('');
+	};
+
+	return (
+		<>
+			<div>
+				{messages && messages.map((msg) => <ChatMessage key={msg.id} message={msg} />)}
+			</div>
+			<form onSubmit={sendMessage}>
+				<input
+					value={formValue}
+					onChange={(e) => setFormValue(e.target.value)}
+					type='text'
+				/>
+				<button type='submit'>🕊</button>
+			</form>
+		</>
+	);
+};
+
+const ChatMessage = ({ message }) => {
+	const { text, uid, photoURL } = message;
+
+	const messageClass = uid === auth.currentUser.uid ? 'sent' : 'received';
+	return (
+		<div className={messageClass}>
+			<img src={photoURL} alt='' />
+			<p>{message.text}</p>
+		</div>
+	);
+};
+
+export default App;
