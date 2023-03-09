@@ -112,8 +112,15 @@ const ChatMessage = ({ message }) => {
 
 	return (
     <li className={messageLiClass}>
-      <img src={photoURL} alt="avatar"
-        className={`rounded-circle d-flex align-self-start shadow-1-strong ${avatarClass}`} width="60" />
+      <img
+        src={photoURL}
+        onError={event => {
+          event.target.src = "anonymous-avatar.png"
+        }}
+        alt="avatar"
+        className={`rounded-circle d-flex align-self-start shadow-1-strong ${avatarClass}`}
+        width="60"
+      />
 
       <div className="card w-100 ml-2">
         <div className="card-header d-flex justify-content-between p-3">
