@@ -27,14 +27,25 @@ const App = () => {
 
 	return (
 		<div className='App'>
-      <section className='header'>
-        <h1>MAD | Superchat APP ⚛️🔥💬</h1>
-      </section>
-      <ChatRoom />
-      <section className='authentication'>
-        <SignIn/>
-        <SignOutButton />
-      </section>
+      <div>
+        <button className='btn btn-info'>Hey</button>
+      </div>
+      {
+        user ? (
+          <>
+            <section className='authentication'>
+              <SignOutButton />
+              <SignIn/>
+            </section>
+            <section className='header'>
+              <h1>MAD | Superchat APP ⚛️🔥💬</h1>
+            </section>
+            <ChatRoom />
+          </>
+        ) : (
+          <SignIn/>
+        )
+      }
 
 		</div>
 	);
@@ -94,8 +105,8 @@ const ChatMessage = ({ message }) => {
 
 	const messageClass = uid === auth.currentUser.uid ? 'sent' : 'received';
 	return (
-		<div className={messageClass}>
-			<img src={photoURL} alt='' />
+		<div className={messageClass} style={{display:'flex', flexDirection: 'row', flexWrap: 'wrap'}}>
+			<img width={'24px'} height={'24px'} src={photoURL} alt='' />
 			<p>{message.text}</p>
 		</div>
 	);
