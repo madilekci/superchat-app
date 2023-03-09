@@ -10,6 +10,7 @@ import { useCollectionData } from 'react-firebase-hooks/firestore';
 
 // components
 import SignInButton from './components/SignInButton';
+import SignOutButton from './components/SignOutButton';
 
 import moment from 'moment';
 
@@ -35,9 +36,9 @@ const App = () => {
       {/* Navbar */}
 			<nav className='navbar navbar-light bg-light justify-content-between sticky-top'>
       <div className="container-fluid">
-        MAD | Superchat APP 💬
+        <a href="#" className='navbar-brand'>MAD | Superchat APP 💬</a>
         <a className='navbar-brand' href='#'>
-					{ user ?  <SignOutButton /> : <SignInButton provider={provider} auth={auth} />  }
+					{ user ?  <SignOutButton auth={auth} /> : <SignInButton provider={provider} auth={auth} />  }
         </a>
         </div>
 			</nav>
@@ -46,17 +47,12 @@ const App = () => {
 	);
 };
 
-const SignOutButton = () => (
-  <button className='btn btn-outline-success my-2 my-sm-0' onClick={() => auth.signOut()}>Sign Out</button>
-);
-
 const ChatRoom = () => {
 	const messagesRef = firestore.collection('messages');
 	const query = messagesRef.orderBy('createdAt').limit(25);
 	const [formValue, setFormValue] = useState('');
 
 	const [messages] = useCollectionData(query, { idField: 'id' });
-	console.log('messages', messages);
 
 	const sendMessage = async (e) => {
 		e.preventDefault();
@@ -73,11 +69,6 @@ const ChatRoom = () => {
 	};
 
 	return (
-		// <>
-		// 	<div>
-		// 		{messages && messages.map((msg) => <ChatMessage key={msg.id} message={msg} />)}
-		// 	</div>
-		// </>
     <section style={{backgroundColor: '#E5E5CB'}}>
         <div style={{minHeight: '600px'}} className='container py-5'>
           <div className="row">
