@@ -57,9 +57,9 @@ const App = () => {
 					</a>
 				</div>
 			</nav>
-      <section style={{ backgroundColor: '#E5E5CB', minHeight: '600px' }}>
-			  {user && <ChatRoom {...chatRoomProps} />}
-		  </section>
+			<section style={{ backgroundColor: '#E5E5CB', minHeight: '600px' }}>
+				{user && <ChatRoom {...chatRoomProps} />}
+			</section>
 		</>
 	);
 };
