@@ -29,18 +29,19 @@ const firestore = firebase.firestore();
 const App = () => {
 	const textAreaRef = useRef(null);
 	useEffect(() => {
-		console.log('textAreaRef.current', textAreaRef.current);
 		textAreaRef.current && textAreaRef.current.scrollIntoView({ behavior: 'smooth' });
 	}, [textAreaRef.current])
 
 	const [user] = useAuthState(auth);
 	const provider = new firebase.auth.GoogleAuthProvider();
 	const messagesRef = firestore.collection('messages');
+	const bannedUsersRef = firestore.collection('banned');
 	const query = messagesRef.orderBy('createdAt').limit(25);
 	const [messages] = useCollectionData(query, { idField: 'id' });
 
 	const chatRoomProps = {
 		messages,
+		bannedUsersRef,
 		messagesRef,
 		currentUser: auth.currentUser,
 		firebase,

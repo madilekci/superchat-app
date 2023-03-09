@@ -1,17 +1,28 @@
 import React, { useState } from 'react';
+import Filter from 'bad-words';
 
 // components
 import ChatMessage from './ChatMessage';
 
-const ChatRoom = ({ messagesRef, messages, currentUser, firebase, textAreaRef }) => {
+const ChatRoom = ({ messages, bannedUsersRef, messagesRef, currentUser, firebase, textAreaRef }) => {
 	const [formValue, setFormValue] = useState('');
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
+
 		const { uid, photoURL } = currentUser;
 
+		// check if message is appropriate
+		const filter = new Filter();
+		const isProfane = filter.isProfane(formValue);
+
+		// if message is not appropriate
+		// create an empty doc under banned collection
+		isProfane && await bannedUsersRef.doc(uid).set({});
+
+
 		await messagesRef.add({
-			text: formValue,
+			text: isProfane ? `🤐 I got banned for saying: ${filter.clean(formValue)}` : formValue,
 			createdAt: firebase.firestore.FieldValue.serverTimestamp(),
 			uid,
 			photoURL,
