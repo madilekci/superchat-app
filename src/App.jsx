@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
 import './App.css';
 
+// firebase
 import firebase from 'firebase/compat/app';
-
 import 'firebase/compat/firestore';
 import 'firebase/compat/auth';
-
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { useCollectionData } from 'react-firebase-hooks/firestore';
+
+// components
+import SignInButton from './components/SignInButton';
 
 import moment from 'moment';
 
@@ -26,6 +28,7 @@ const firestore = firebase.firestore();
 
 const App = () => {
 	const [user] = useAuthState(auth);
+  const provider = new firebase.auth.GoogleAuthProvider();
 
 	return (
 		<>
@@ -34,7 +37,7 @@ const App = () => {
       <div className="container-fluid">
         MAD | Superchat APP 💬
         <a className='navbar-brand' href='#'>
-					{ user ?  <SignOutButton /> : <SignIn />  }
+					{ user ?  <SignOutButton /> : <SignInButton provider={provider} auth={auth} />  }
         </a>
         </div>
 			</nav>
@@ -43,14 +46,6 @@ const App = () => {
 	);
 };
 
-const SignIn = () => {
-	const handleSignIn = () => {
-		const provider = new firebase.auth.GoogleAuthProvider();
-		auth.signInWithPopup(provider);
-	};
-
-	return <button className='btn btn-outline-success my-2 my-sm-0' onClick={handleSignIn}>Sign In with Google</button>;
-};
 const SignOutButton = () => (
   <button className='btn btn-outline-success my-2 my-sm-0' onClick={() => auth.signOut()}>Sign Out</button>
 );
