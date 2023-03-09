@@ -9,13 +9,10 @@ const ChatMessage = ({ message, currentUser }) => {
 
 	const messageDirection = uid === currentUser?.uid ? 'sent' : 'received';
 
-	let messageLiClass = 'd-flex justify-content-between mb-4';
-	messageDirection === 'sent' && (messageLiClass += ' flex-row-reverse');
-
 	const avatarClass = messageDirection === 'sent' ? 'ms-3' : 'me-3';
 
 	return (
-		<li className={messageLiClass}>
+		<li className={`d-flex justify-content-between mb-4 ${messageDirection === 'sent' && ' flex-row-reverse'}`}>
 			<img
 				src={photoURL}
 				onError={(event) => {
@@ -26,10 +23,10 @@ const ChatMessage = ({ message, currentUser }) => {
 				width='60'
 			/>
 
-			<div className='card w-100 ml-2'>
-				<div className='card-header d-flex justify-content-between p-3'>
-					<p className='fw-bold mb-0'>{currentUser.displayName}</p>
-					<p className='text-muted small mb-0'>
+			<div className='card w-100'>
+				<div className={`card-header d-flex justify-content-between ${messageDirection === 'sent' && ' flex-row-reverse'}`}>
+					<p className='fw-light fs-6 mb-0'>{currentUser.displayName}</p>
+					<p className='mb-0' style={{fontSize: '0.8rem'}}>
 						<i className='far fa-clock'></i>
 						{timeDiff}
 					</p>
