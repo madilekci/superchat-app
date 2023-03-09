@@ -27,7 +27,6 @@ const ChatMessage = ({ message, currentUser }) => {
 				<div className={`card-header d-flex justify-content-between ${messageDirection === 'sent' && ' flex-row-reverse'}`}>
 					<p className='fw-light fs-6 mb-0'>{currentUser.displayName}</p>
 					<p className='mb-0' style={{fontSize: '0.8rem'}}>
-						<i className='far fa-clock'></i>
 						{timeDiff}
 					</p>
 				</div>

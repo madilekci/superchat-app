@@ -1,0 +1,6 @@
+.mainContainer {
+    background: rgb(211,160,246);
+    background: linear-gradient(45deg, rgba(211,160,246,1) 15%, rgba(183,255,182,1) 50%, rgba(249,195,120,1) 100%);
+    /* background-color: '#E5E5CB'; */
+    min-height: '600px';
+}

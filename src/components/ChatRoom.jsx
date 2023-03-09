@@ -29,7 +29,7 @@ const ChatRoom = ({ messagesRef, messages, currentUser, firebase, textAreaRef })
 							messages.map((msg) => <ChatMessage key={msg.id} message={msg} currentUser={currentUser} />)}
 						<li className='bg-white mb-3 mt-5'>
 							<form
-								className='form-floating form-outline'
+								className='form-floating'
 								onSubmit={handleSubmit}
 							>
 								<textarea
@@ -42,7 +42,7 @@ const ChatRoom = ({ messagesRef, messages, currentUser, firebase, textAreaRef })
 								/>
 								<label htmlFor='textarea'>Your message</label>
 								<button
-									className='btn btn-lg btn-outline-success float-end mt-3'
+									className='btn btn-lg btn-success float-end mt-3'
 									type='submit'
 								>
 									Send 🕊
