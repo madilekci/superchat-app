@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef, useEffect} from 'react';
 import './App.css';
 
 // firebase
@@ -27,8 +27,13 @@ const auth = firebase.auth();
 const firestore = firebase.firestore();
 
 const App = () => {
-	const [user] = useAuthState(auth);
+	const textAreaRef = useRef(null);
+	useEffect(() => {
+		console.log('textAreaRef.current', textAreaRef.current);
+		textAreaRef.current && textAreaRef.current.scrollIntoView({ behavior: 'smooth' });
+	}, [textAreaRef.current])
 
+	const [user] = useAuthState(auth);
 	const provider = new firebase.auth.GoogleAuthProvider();
 	const messagesRef = firestore.collection('messages');
 	const query = messagesRef.orderBy('createdAt').limit(25);
@@ -39,6 +44,7 @@ const App = () => {
 		messagesRef,
 		currentUser: auth.currentUser,
 		firebase,
+		textAreaRef,
 	};
 
 	return (
@@ -46,7 +52,7 @@ const App = () => {
 			<nav className='navbar navbar-light bg-light justify-content-between sticky-top'>
 				<div className='container-fluid'>
 					<a href='#' className='navbar-brand'>
-						MAD | Superchat APP 💬
+						MAD | Superchat App 💬
 					</a>
 					<a className='navbar-brand' href='#'>
 						{user ? (

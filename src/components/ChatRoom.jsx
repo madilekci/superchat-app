@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 // components
 import ChatMessage from './ChatMessage';
 
-const ChatRoom = ({ messagesRef, messages, currentUser, firebase }) => {
+const ChatRoom = ({ messagesRef, messages, currentUser, firebase, textAreaRef }) => {
 	const [formValue, setFormValue] = useState('');
 
 	const handleSubmit = async (e) => {
@@ -33,13 +33,14 @@ const ChatRoom = ({ messagesRef, messages, currentUser, firebase }) => {
 								onSubmit={handleSubmit}
 							>
 								<textarea
+									ref={textAreaRef}
 									className='form-control'
 									placeholder='Type your message here'
-									id='floatingTextarea2'
+									id='textarea'
 									value={formValue}
 									onChange={(e) => setFormValue(e.target.value)}
 								/>
-								<label htmlFor='floatingTextarea2'>Your message</label>
+								<label htmlFor='textarea'>Your message</label>
 								<button
 									className='btn btn-lg btn-outline-success float-end mt-3'
 									type='submit'
